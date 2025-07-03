@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>📊 Prediction History</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #ffffff);
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #0d47a1;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 720px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            margin-top: 25px;
+        }
+
+        .button-bar {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-button, .delete-button {
+            display: inline-block;
+            margin: 10px 10px 0;
+            background: linear-gradient(135deg, #1976d2, #42a5f5);
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .back-button:hover, .delete-button:hover {
+            background: linear-gradient(135deg, #1565c0, #1e88e5);
+        }
+
+        .delete-button {
+            background: linear-gradient(135deg, #e53935, #ef5350);
+        }
+
+        .delete-button:hover {
+            background: linear-gradient(135deg, #c62828, #e53935);
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📊 Prediction History</h2>
+
+    <div class="chart-container">
+        {% if records %}
+            <canvas id="historyChart"></canvas>
+        {% else %}
+            <p style="text-align:center; font-size:18px; color:#888;">No history records found.</p>
+        {% endif %}
+    </div>
+
+    <div class="button-bar">
+        <a href="/" class="back-button">← Back to Home</a>
+        {% if records %}
+            <form method="POST" action="{{ url_for('delete_history') }}" style="display:inline;">
+                <button type="submit" class="delete-button">🗑 Delete History</button>
+            </form>
+        {% endif %}
+    </div>
+
+    {% if records %}
+    <script>
+        const records = {{ records | tojson }};
+        const labels = records.map(r => r.timestamp);
+        const confidences = records.map(r => r.confidence);
+        const predictions = records.map(r => r.prediction);
+
+        const backgroundColors = predictions.map(p =>
+            p === "PNEUMONIA" ? "rgba(255, 99, 132, 0.6)" : "rgba(75, 192, 192, 0.6)"
+        );
+
+        const ctx = document.getElementById('historyChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Confidence (%)',
+                    data: confidences,
+                    backgroundColor: backgroundColors,
+                    borderRadius: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                return "Prediction: " + predictions[context.dataIndex];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Confidence (%)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 30
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    {% endif %}
+
+</body>
+</html>

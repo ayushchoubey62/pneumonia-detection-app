@@ -1,0 +1,53 @@
+# Ignore Python virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore model files (if you plan to upload elsewhere)
+*.h5
+*.keras
+*.ckpt
+*.pb
+*.tflite
+
+# Ignore logs and runtime data
+*.log
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode and IDE config files
+.vscode/
+.idea/
+
+# Ignore uploads if you want to exclude user-uploaded files
+# /static/uploads/
+
+# Ignore test coverage reports
+htmlcov/
+coverage.xml
+*.cover
+
+# Ignore compiled C extensions
+*.so
+
+# Ignore test output
+test-results/
+
+*.h5
+*.keras
+*.ckpt
+*.pb
+*.tflite
+*.pyd
+*.pkl
